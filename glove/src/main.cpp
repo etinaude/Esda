@@ -1,5 +1,4 @@
-// Glove code
-
+#include <Arduino.h>
 #include <WiFi.h>
 #include <HTTPClient.h>
 #include <Arduino_JSON.h>
@@ -20,7 +19,7 @@
 int flexVals[5];
 int issueDetected = false;
 
-CHSV leds[NumPixels];
+CRBG leds[NumPixels];
 
 const char* ssid = "etienne";
 const char* password = "etienne123";
