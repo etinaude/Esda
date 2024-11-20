@@ -43,7 +43,19 @@ void sendCancelApi() {
 }
 
 
+void sendTrainingData(){
 
+  JSONVar data;
+
+  String jsonString = "["+ String(flexVals[0]) + "," + String(flexVals[1]) + "," + String(flexVals[2]) + "," + String(flexVals[3]) + "," + String(flexVals[4]) + "]";
+
+  data["flexVals"] = jsonString;
+
+  Serial.println(data["flexVals"]);
+
+
+  sendAPI("/train", data);
+}
 
 void detectIssue(){
   if(flexVals[0] < 20000){
@@ -52,7 +64,8 @@ void detectIssue(){
 }
 
 void loop() {
-  // printSample();
-  sendDetectApi();
+  getTrainingData();
+  sendTrainingData();
+
   delay(3000);
 }
