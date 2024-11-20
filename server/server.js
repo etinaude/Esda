@@ -23,10 +23,27 @@ wss.on('connection', (ws) => {
   clients.push(ws);
 
 // Remove the client when disconnected
-ws.on('close', () => {
-  console.log('WebSocket client disconnected');
-  clients = clients.filter((client) => client !== ws);
+ws.on('close', (code, reason) => {
+  console.log(`WebSocket client disconnected. Code: ${code}, Reason: ${reason}`);
+  // Only remove if the client is actually disconnected
+  if (ws.readyState === WebSocket.CLOSED) {
+    clients = clients.filter((client) => client !== ws);
+  }
+});
+
+// Handle ping pong to keep the connection alive.
+const interval = setInterval(() => {
+  clients.forEach((client) => {
+    if (client.readyState === WebSocket.OPEN) {
+      client.ping(); // Send a ping to the client
+    }
   });
+}, 30000); // Every 30 seconds
+
+ws.on('pong', () => {
+  console.log('Received pong from client');
+});
+
 });
 
 // Broadcast a message to all connected clients
