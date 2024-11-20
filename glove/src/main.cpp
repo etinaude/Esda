@@ -4,6 +4,7 @@
 #include "api.h"
 #include "hardware.h"
 #include <SPI.h>
+// #include "training.h"
 
 int issueDetected = false;
 
@@ -11,9 +12,8 @@ void setup() {
   Serial.begin(9600);
   setupPins();
   setupWifi();
-}
 
-void loop() {
+  Serial.println("Setup done");
 }
 
 void sendDetectApi() {
@@ -40,4 +40,19 @@ void sendCancelApi() {
 
   JSONVar data;
   sendAPI("/cancel", data);
+}
+
+
+
+
+void detectIssue(){
+  if(flexVals[0] < 20000){
+    sendDetectApi();
+  }
+}
+
+void loop() {
+  // printSample();
+  sendDetectApi();
+  delay(3000);
 }

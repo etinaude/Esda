@@ -1,7 +1,7 @@
-char* ssid = "etienne";
+char* ssid = "Etienne";
 char* password = "etienne123";
 String deviceID = "cf414906-b98b-4c42-bcac-c64987501bd9";
-String serverName = "http://192.168.1.106:1880";
+String serverName = "http://192.168.176.96:3000";
 
 #include <WiFi.h>
 #include <HTTPClient.h>
