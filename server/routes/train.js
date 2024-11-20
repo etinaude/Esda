@@ -8,29 +8,34 @@ const trainingLogPath = path.join(__dirname, 'trainingLog.json'); // File path f
 router.post('/', (req, res) => {
   const { deviceId, flexVals, /*label*/ } = req.body; // Expect JSON {deviceId: Str, flexVals: [int,int,int,int,int], label: int}
 
-  console.log(`Received training values: ${flexVals[0]}`);
+  console.log(`Received training values: ${flexVals}`);
 
-  // Validate flexVals and label
-  if (
-    Array.isArray(flexVals) &&
-    flexVals.length === 5 &&
-    flexVals.every((val) => Number.isInteger(val)) /* &&
-    Number.isInteger(label) &&
-    label >= 0 &&
-    label < 7*/
-  ) {
-    // Append the data to trainingLog.json
-    appendToTrainingLog({
-      flexVals,
-      label: 0, //label,
-      timestamp: new Date().toISOString(),
-    });
+    let parsedFlexVals;
+    try {
+    parsedFlexVals = typeof flexVals === 'string' ? JSON.parse(flexVals) : flexVals;
+    } catch (error) {
+    console.error('Error parsing flexVals:', error.message);
+    return res.status(400).send({ error: 'Invalid format for flexVals. It should be a valid JSON array.' });
+    }
 
-    // Respond to the HTTP client
-    res.status(200).send({ message: `Logged training data: ${flexVals}, with label: ${label}` });
-  } else {
-    res.status(400).send({ error: 'Invalid training data. Ensure flexVals is an array of 5 integers and label is between 0 and 6.' });
-  }
+    // Validate parsedFlexVals and label
+    if (
+        Array.isArray(parsedFlexVals) &&
+        parsedFlexVals.length === 5 &&
+        parsedFlexVals.every((val) => Number.isInteger(val))
+    ) {
+        // Append the data to trainingLog.json
+        appendToTrainingLog({
+        flexVals: parsedFlexVals,
+        label: 0, //label,
+        timestamp: new Date().toISOString(),
+        });
+    
+        // Respond to the HTTP client
+        res.status(200).send({ message: `Logged training data: ${parsedFlexVals}` });
+    } else {
+        res.status(400).send({ error: 'Invalid training data. Ensure flexVals is an array of 5 integers and label is between 0 and 6.' });
+    }
 });
 
 // Function to append data to the training log
