@@ -4,6 +4,7 @@ const WebSocket = require('ws');
 const statusRoutes = require('./routes/status');
 const detectRoutes = require('./routes/detect');
 const cancelRoutes = require('./routes/cancel');
+const trainRoutes = require('./routes/train');
 
 const app = express();
 app.use(bodyParser.json({ type: 'application/json', limit: '10mb', strict: true }));
@@ -21,10 +22,10 @@ wss.on('connection', (ws) => {
   console.log('New WebSocket client connected');
   clients.push(ws);
 
-  // Remove the client when disconnected
-  ws.on('close', () => {
-    console.log('WebSocket client disconnected');
-    clients = clients.filter((client) => client !== ws);
+// Remove the client when disconnected
+ws.on('close', () => {
+  console.log('WebSocket client disconnected');
+  clients = clients.filter((client) => client !== ws);
   });
 });
 
@@ -52,6 +53,7 @@ server.on('upgrade', (request, socket, head) => {
 app.use('/status', statusRoutes(broadcastMessage));
 app.use('/detect', detectRoutes(broadcastMessage));
 app.use('/cancel', cancelRoutes(broadcastMessage));
+app.use('/train', trainRoutes);
 
 // Default route to check server
 app.get('/', (req, res) => {
