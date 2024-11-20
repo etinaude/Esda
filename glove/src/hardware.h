@@ -3,15 +3,15 @@
 
 #define NumPixels 1
 
-#define LEDPin 10
-#define MotorPin 8
-#define ButtonPin 9
+#define LEDPin 17
+#define MotorPin 17
+#define ButtonPin 17
 
-#define Flex1Pin 12
-#define Flex2Pin 1
-#define Flex3Pin 2
-#define Flex4Pin 3
-#define Flex5Pin 4
+#define Flex1Pin 11
+#define Flex2Pin 17
+#define Flex3Pin 17
+#define Flex4Pin 17
+#define Flex5Pin 17
 
 int flexVals[5];
 int flexPercentVals[5];
@@ -72,11 +72,17 @@ void printSensors(){
 
 void printSample(){
   readSensors();
+
   printSensors();
 }
 
 void getTrainingData(){
   readSensors();
+  flexVals[1] = 0;
+  flexVals[2] = 0;
+  flexVals[3] = 0;
+  flexVals[4] = 0;
+
   printSensors();
-  delay(1500);
+  delay(1000);
 }

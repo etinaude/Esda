@@ -8,6 +8,9 @@ import pandas as pd
 #     "label": 1,
 #     "flexVals": [0, 0, 0, 0, 0]
 #   },...
+
+# [6244, 0, 0, 0, 0] => [1]  # 0
+# [8191, 0, 0, 0, 0] => [1]  # 1
 # ]
 
 
@@ -19,18 +22,18 @@ train_data = data[:train_size]
 val_data = data[train_size:]
 
 x_train = np.array(train_data['flexVals'].tolist(), dtype=np.int32)
-y_train = np.array(train_data['label'].tolist(), dtype=np.int32)
+y_train = np.array(train_data['label'].tolist())
 
 x_val = np.array(val_data['flexVals'].tolist(), dtype=np.int32)
-y_val = np.array(val_data['label'].tolist(), dtype=np.int32)
+y_val = np.array(val_data['label'].tolist())
 
 
 model = tf.keras.Sequential([
     tf.keras.layers.Dense(16, activation='relu', input_shape=(5,)),  # Input layer
     tf.keras.layers.Dense(8, activation='relu'),                     # Hidden layer
-    tf.keras.layers.Dense(1, activation='sigmoid')                   # Output layer (adjust activation for your problem)
+    tf.keras.layers.Dense(2, activation='softmax')                   # Output layer (adjust activation for your problem)
 ])
-model.compile(optimizer='adam', loss='sparse_categorical_crossentropy', metrics=['accuracy'])  # Adjust loss based on the problem type
+model.compile(optimizer='adam', loss='SparseCategoricalCrossentropy', metrics=['accuracy'])  # Adjust loss based on the problem type
 
 history = model.fit(x_train, y_train, validation_data=(x_val, y_val), epochs=50, batch_size=32)
 

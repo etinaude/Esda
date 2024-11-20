@@ -11,7 +11,7 @@ int issueDetected = false;
 void setup() {
   Serial.begin(9600);
   setupPins();
-  setupWifi();
+  // setupWifi();
 
   Serial.println("Setup done");
 }
@@ -64,8 +64,7 @@ void detectIssue(){
 }
 
 void loop() {
+  Serial.println(".");
   getTrainingData();
   sendTrainingData();
-
-  delay(3000);
 }
