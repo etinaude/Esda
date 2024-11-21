@@ -1,53 +1,51 @@
 import tensorflow as tf
 import numpy as np
 import pandas as pd
+from model import normalizer, optimizer, early_stopping, reduce_lr
 
-# Data format
-# [
-#   {
-#     "label": 1,
-#     "flexVals": [0, 0, 0, 0, 0]
-#   },...
+data = pd.read_json('./data/train.json')
 
-# [6244, 0, 0, 0, 0] => [1]  # 0
-# [8191, 0, 0, 0, 0] => [1]  # 1
-# ]
+train = data.sample(frac=0.8, random_state=200)
+val = data.drop(train.index)
 
+x_train = np.array(train['flexVals'].tolist())
+y_train = np.array(train['label'].tolist())
 
-data = pd.read_json('./data/test.json')
-data = data.sample(frac=1).reset_index(drop=True)
+x_val = np.array(val['flexVals'].tolist())
+y_val = np.array(val['label'].tolist())
 
-train_size = int(0.8 * len(data))
-train_data = data[:train_size]
-val_data = data[train_size:]
-
-x_train = np.array(train_data['flexVals'].tolist(), dtype=np.int32)
-y_train = np.array(train_data['label'].tolist())
-
-x_val = np.array(val_data['flexVals'].tolist(), dtype=np.int32)
-y_val = np.array(val_data['label'].tolist())
+normalizer.adapt(x_train)
 
 
-model = tf.keras.Sequential([
-    tf.keras.layers.Dense(16, activation='relu', input_shape=(5,)),  # Input layer
-    tf.keras.layers.Dense(8, activation='relu'),                     # Hidden layer
-    tf.keras.layers.Dense(2, activation='softmax')                   # Output layer (adjust activation for your problem)
-])
-model.compile(optimizer='adam', loss='SparseCategoricalCrossentropy', metrics=['accuracy'])  # Adjust loss based on the problem type
+def train_model():
+    # Model
+    model = tf.keras.Sequential([
+        normalizer,
+        tf.keras.layers.Dense(64, activation='relu', input_shape=(5,)),
+        tf.keras.layers.Dense(32, activation='relu'),
+        tf.keras.layers.Dense(2, activation='softmax')
+    ])
+    model.compile(optimizer=optimizer,
+                  loss='sparse_categorical_crossentropy', metrics=['accuracy'])
 
-history = model.fit(x_train, y_train, validation_data=(x_val, y_val), epochs=50, batch_size=32)
+    model.fit(x_train, y_train, validation_data=(
+        x_val, y_val), epochs=100, batch_size=32, callbacks=[early_stopping, reduce_lr])
+
+    return model
 
 
-converter = tf.lite.TFLiteConverter.from_keras_model(model)
-tflite_model = converter.convert()
+def export(model):
+    converter = tf.lite.TFLiteConverter.from_keras_model(model)
+    tflite_model = converter.convert()
+    with open('model.tflite', 'wb') as f:
+        f.write(tflite_model)
 
-# Save the model
-with open('model.tflite', 'wb') as f:
-    f.write(tflite_model)
+    converter.optimizations = [tf.lite.Optimize.DEFAULT]
+    tflite_quantized_model = converter.convert()
 
-converter.optimizations = [tf.lite.Optimize.DEFAULT]
-tflite_quantized_model = converter.convert()
+    with open('model_quantized.tflite', 'wb') as f:
+        f.write(tflite_quantized_model)
 
-# Save the quantized model
-with open('model_quantized.tflite', 'wb') as f:
-    f.write(tflite_quantized_model)
+
+model = train_model()
+export(model)
