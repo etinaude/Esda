@@ -3,9 +3,9 @@
 #include <Arduino_JSON.h>
 #include <WiFi.h>
 #include "FastLED.h"
+#include <ESP32Servo.h>
 
-#define valvePinA 5
-#define valvePinB 6
+#define servoPin 4
 #define LEDPin 7
 
 using namespace websockets;
@@ -16,6 +16,7 @@ String deviceID = "cf414906-b98b-4c42-bcac-c64987501bd9";
 String wsServer = "ws://192.168.176.96:3000";
 
 WebsocketsClient wsClient;
+Servo doorServo;
 
 void setupWifi() {
   WiFi.begin(ssid, password);
@@ -32,16 +33,14 @@ void setupWifi() {
 
 void setupPins() {
   pinMode(LEDPin, OUTPUT);
-  pinMode(valvePinA, OUTPUT);
-  pinMode(valvePinB, OUTPUT);
+  doorServo.setPeriodHertz(50);
+  doorServo.attach(servoPin);
 }
 
-void handleValve(bool on) {
-  int pin = on ? valvePinA : valvePinB;
-
-  digitalWrite(pin, HIGH);
-  delay(500);
-  digitalWrite(pin, LOW);
+void handleServo(bool on) {
+  doorServo.write(0);
+  delay(2000);
+  doorServo.write(0);
 }
 
 void onWebSocketMessage(WebsocketsMessage message) {
@@ -61,8 +60,8 @@ void onWebSocketMessage(WebsocketsMessage message) {
     Serial.print("Pose: ");
     Serial.println(pose);
 
-    if (pose >= 0 && pose < 7) handleValve(true);
-    if (event == "cancel") handleValve(false);
+    if (pose >= 0 && pose < 7) handleServo(true);
+    if (event == "cancel") handleServo(false);
   } else {
     Serial.println("Message not intended for this device.");
   }
