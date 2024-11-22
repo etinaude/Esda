@@ -7,13 +7,11 @@ while True:
         break
     formatted_data += f"0x{data}, "
 
-print(formatted_data)
 f.close()
 
 # remove last comma
 formatted_data = formatted_data[:-2]
 
-# output
 f = open("data/hex_model_ard.txt", "w")
 f.write(formatted_data)
 f.close()
