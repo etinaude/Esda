@@ -50,7 +50,6 @@ void readSensors(){
   flexVals[3] = analogRead(Flex4Pin);
   flexVals[4] = analogRead(Flex5Pin);
 
-  flexVals[1] = 0;
   flexVals[2] = 0;
   flexVals[3] = 0;
   flexVals[4] = 0;
