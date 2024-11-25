@@ -1,11 +1,14 @@
 [
-  { "flexVals": [8191, 0, 0, 0, 0], "label": 1 },
-  { "flexVals": [7346, 0, 0, 0, 0], "label": 1 },
-  { "flexVals": [6500, 0, 0, 0, 0], "label": 1 },
-  { "flexVals": [6200, 0, 0, 0, 0], "label": 1 },
-  { "flexVals": [6100, 0, 0, 0, 0], "label": 0 },
-  { "flexVals": [6000, 0, 0, 0, 0], "label": 0 },
-  { "flexVals": [5000, 0, 0, 0, 0], "label": 0 },
-  { "flexVals": [0, 0, 0, 0, 0], "label": 0 },
-  { "flexVals": [4878, 0, 0, 0, 0], "label": 0 }
+  { "label": 0, "flexVals": [11, 11, 0, 0, 0] },
+  { "label": 0, "flexVals": [1, 15, 0, 0, 0] },
+  { "label": 0, "flexVals": [13, 11, 0, 0, 0] },
+  { "label": 1, "flexVals": [1470, 3652, 0, 0, 0] },
+  { "label": 1, "flexVals": [1604, 3858, 0, 0, 0] },
+  { "label": 1, "flexVals": [3586, 4174, 0, 0, 0] },
+  { "label": 1, "flexVals": [4984, 4126, 0, 0, 0] },
+  { "label": 1, "flexVals": [5164, 4082, 0, 0, 0] },
+  { "label": 0, "flexVals": [196, 3, 0, 0, 0] },
+  { "label": 0, "flexVals": [334, 11, 0, 0, 0] },
+  { "label": 0, "flexVals": [344, 5, 0, 0, 0] },
+  { "label": 0, "flexVals": [286, 5, 0, 0, 0] }
 ]
