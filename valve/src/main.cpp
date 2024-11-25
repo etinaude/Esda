@@ -4,8 +4,7 @@
 #include <WiFi.h>
 #include "FastLED.h"
 
-#define valvePinA 5
-#define valvePinB 6
+#define valvePinA 3
 #define LEDPin 7
 
 using namespace websockets;
@@ -13,7 +12,7 @@ using namespace websockets;
 String ssid = "Etienne";
 String password = "etienne123";
 String deviceID = "cf414906-b98b-4c42-bcac-c64987501bd9";
-String wsServer = "ws://192.168.176.96:3000";
+String wsServer = "ws://192.168.176.124:3000";
 
 WebsocketsClient wsClient;
 
@@ -33,15 +32,13 @@ void setupWifi() {
 void setupPins() {
   pinMode(LEDPin, OUTPUT);
   pinMode(valvePinA, OUTPUT);
-  pinMode(valvePinB, OUTPUT);
+  digitalWrite(valvePinA, HIGH);
 }
 
 void handleValve(bool on) {
-  int pin = on ? valvePinA : valvePinB;
-
-  digitalWrite(pin, HIGH);
-  delay(500);
-  digitalWrite(pin, LOW);
+  digitalWrite(valvePinA, !on);
+  delay(5000);
+  digitalWrite(valvePinA, on);
 }
 
 void onWebSocketMessage(WebsocketsMessage message) {
