@@ -5,6 +5,7 @@
 #include "FastLED.h"
 #include <ESP32Servo.h>
 
+
 #define servoPin 4
 #define LEDPin 7
 
@@ -13,7 +14,7 @@ using namespace websockets;
 String ssid = "Etienne";
 String password = "etienne123";
 String deviceID = "cf414906-b98b-4c42-bcac-c64987501bd9";
-String wsServer = "ws://192.168.176.96:3000";
+String wsServer = "ws://192.168.176.124:3000";
 
 WebsocketsClient wsClient;
 Servo doorServo;
@@ -38,9 +39,9 @@ void setupPins() {
 }
 
 void handleServo(bool on) {
-  doorServo.write(0);
+  doorServo.write(5);
   delay(2000);
-  doorServo.write(0);
+  doorServo.write(150);
 }
 
 void onWebSocketMessage(WebsocketsMessage message) {
