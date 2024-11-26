@@ -23,7 +23,7 @@ def train_model():
         normalizer,
         tf.keras.layers.Dense(64, activation='relu', input_shape=(5,)),
         tf.keras.layers.Dense(32, activation='relu'),
-        tf.keras.layers.Dense(2, activation='softmax')
+        tf.keras.layers.Dense(4, activation='softmax')
     ])
     model.compile(optimizer=optimizer,
                   loss='sparse_categorical_crossentropy', metrics=['accuracy'])
