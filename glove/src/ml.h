@@ -4,7 +4,7 @@
 
 #define INPUT_SIZE 5
 #define OUTPUT_SIZE 4
-#define BUFFER_SIZE 10
+#define BUFFER_SIZE 3
 
 // mapping
 String labels[OUTPUT_SIZE] = {"Normal", "Back", "Fist", "Finger"};
@@ -46,8 +46,6 @@ class TensorModel {
 
     // gets rolling mode and rolling ave confidence and most likely pose
     void getRollingStats(){
-      if (!success) return;
-
       int counts[OUTPUT_SIZE] = {0, 0, 0, 0};
       float confidenceSum = 0;
 
@@ -55,15 +53,15 @@ class TensorModel {
         counts[indexBuffer[i]]++;
         confidenceSum += confidenceBuffer[i];
       }
-      int maxCountIndex = 0;
 
+      rollingMode = 0;
       for (int i = 0; i < OUTPUT_SIZE; i++) {
-        if (counts[i] > counts[maxCountIndex]) {
-          maxCountIndex = i;
+        if (counts[i] > counts[rollingMode]) {
+          rollingMode = i;
         }
       }
 
-      rollingMode = maxCountIndex;
+
       rollingConfidence = confidenceSum / BUFFER_SIZE;
       pose = labels[rollingMode];
     }
@@ -82,24 +80,21 @@ class TensorModel {
 
       success = true;
       int maxIndex = 0;
-      float results[OUTPUT_SIZE] = {0, 0, 0, 0};
 
       for (int i = 0; i < OUTPUT_SIZE; i++) {
-        results[i] = modelGetOutput(i);
-
-        if (results[i] > results[maxIndex]) {
+        if (modelGetOutput(i) > modelGetOutput(maxIndex)) {
           maxIndex = i;
         }
       }
 
       // Serial.print("{ ");
       // for (int i = 0; i < OUTPUT_SIZE; i++) {
-      //   Serial.print(results[i]);
+      //   Serial.print(modelGetOutput(i));
       //   Serial.print(" ");
       // }
       // Serial.print("}");
 
-      add(maxIndex, results[maxIndex]);
+      add(maxIndex, modelGetOutput(maxIndex));
       getRollingStats();
     }
 

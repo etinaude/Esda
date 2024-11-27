@@ -9,6 +9,8 @@ TensorModel tensorModel;
 Api api = Api();
 Hardware hardware = Hardware();
 
+int triggerCount = 0;
+
 void setup() {
   Serial.begin(9600);
   api.setupWifi();
@@ -22,10 +24,29 @@ void training(){
   delay(500);
 }
 
+void blink(){
+  digitalWrite(LED_BUILTIN, HIGH);
+  delay(200);
+  digitalWrite(LED_BUILTIN, LOW);
+}
+
+void cancel(){
+  hardware.handleMotor(false);
+  hardware.setLED(0, 0);
+  // api.sendCancelApi();
+  triggerCount = 0;
+}
+
 void detect(){
-  hardware.setLED(0, 255);  //red
   hardware.handleMotor(true);
-  api.sendDetectApi(tensorModel.rollingMode, tensorModel.rollingConfidence);
+
+  triggerCount++;
+  if(triggerCount > 5){
+    api.sendDetectApi(tensorModel.rollingMode, tensorModel.rollingConfidence);
+    blink();
+    cancel();
+  }
+
 }
 
 void prediction(){
@@ -37,27 +58,19 @@ void prediction(){
 
     if(tensorModel.rollingMode > 0){
       detect();
+    } else{
+      cancel();
     }
   }
 
-  delay(100);
+  delay(150);
 }
 
-void blink(){
-  digitalWrite(LED_BUILTIN, HIGH);
-  delay(500);
-  digitalWrite(LED_BUILTIN, LOW);
-  delay(500);
-}
 
-void cancel(){
-  hardware.handleMotor(false);
-  hardware.setLED(0, 0);
-  api.sendCancelApi();
-}
 
 void loop() {
   //  training();
   prediction();
+
   //  blink();
 }

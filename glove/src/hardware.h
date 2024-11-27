@@ -4,8 +4,8 @@
 #define NumPixels 1
 
 #define LEDPin 37
-#define MotorPin 35
-#define ButtonPin 33
+#define MotorPin 6
+#define ButtonPin 8
 
 #define Flex1Pin 11
 #define Flex2Pin 9
@@ -21,7 +21,7 @@ class Hardware {
 
     Hardware() {
       pinMode(MotorPin, OUTPUT);
-      pinMode(LEDPin, OUTPUT);
+      pinMode(LED_BUILTIN, OUTPUT);
 
       pinMode(ButtonPin, INPUT);
 
@@ -70,5 +70,9 @@ class Hardware {
       String jsonString = "[" + String(flexVals[0]) + "," + String(flexVals[1]) + "," + String(flexVals[2]) + "," + String(flexVals[3]) + "," + String(flexVals[4]) + "]";
       data["flexVals"] = jsonString;
       Serial.println(jsonString);
+    }
+
+    bool isButtonPressed(){
+      return digitalRead(ButtonPin) == LOW;
     }
 };

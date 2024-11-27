@@ -1,15 +1,15 @@
+#include <Arduino.h>
 #include <WiFi.h>
 #include <HTTPClient.h>
 
 String ssid = "Etienne";
 String password = "etienne123";
 String deviceID = "cf414906-b98b-4c42-bcac-c64987501bd9";
-String serverName = "http://192.168.176.96:3000";
+String serverName = "http://192.168.176.124:3000";
 
 class Api {
   public:
     Api() {
-      setupWifi();
     }
 
     void setupWifi() {
@@ -24,7 +24,6 @@ class Api {
       Serial.println(WiFi.localIP());
 
       delay(1000);
-
     }
 
     void sendAPI(String endPoint, JSONVar data) {
