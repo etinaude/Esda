@@ -3,72 +3,116 @@
 #include "model.h"
 
 #define INPUT_SIZE 5
-#define OUTPUT_SIZE 2
+#define OUTPUT_SIZE 4
+#define BUFFER_SIZE 10
 
+// mapping
+String labels[OUTPUT_SIZE] = {"Normal", "Back", "Fist", "Finger"};
 
 constexpr int kTensorArenaSize = 2000;
 alignas(16) uint8_t tensor_arena[kTensorArenaSize];
 
-struct TensorModel {
-  float results[OUTPUT_SIZE];
-  int maxIndex;
-  float maxVal;
-  bool success = false;
-};
+class TensorModel {
+  public:
+    bool success = false;
 
-void initML(){
-  if (!modelInit(model, tensor_arena, kTensorArenaSize)){
-    Serial.println("Model initialization failed!");
-    while(true);
-  }
-  Serial.println("Model initialization done.");
-}
+    int indexBuffer[BUFFER_SIZE];
+    float confidenceBuffer[BUFFER_SIZE];
+    int bufferIndex = 0;
 
-TensorModel mlPredict(int vals[]) {
-  TensorModel tensorModel;
+    int rollingMode = 0;
+    float rollingConfidence = 0;
+    String pose = "";
 
-  for (int i = 0; i < 5; i++) {
-    modelSetInput(vals[i], i);
-  }
-
-  if (!modelRunInference()) {
-    Serial.println("RunInference Failed!");
-    return tensorModel;
-  }
-
-  tensorModel.success = true;
-  float max = tensorModel.results[0];
-  int maxIndex = 0;
-
-  for (int i = 0; i < OUTPUT_SIZE; i++) {
-    tensorModel.results[i] = modelGetOutput(i);
-
-    if (tensorModel.results[i] > max) {
-      tensorModel.maxVal = tensorModel.results[i];
-      tensorModel.maxIndex = i;
+    TensorModel(){
+      if (!modelInit(model, tensor_arena, kTensorArenaSize)){
+        Serial.println("Model initialization failed!");
+        while(true);
+      }
+      Serial.println("Model initialization done.");
     }
-  }
 
-  return tensorModel;
-}
+    void add(int index, float confidence){
+      if (!success) return;
 
-void displayResults(TensorModel tensorModel){
-  if (!tensorModel.success) {
-    Serial.println("Failed to get results");
-    return;
-  }
+      indexBuffer[bufferIndex] = index;
+      confidenceBuffer[bufferIndex] = confidence;
 
-  Serial.print("{ ");
-  for (int i = 0; i < OUTPUT_SIZE; i++) {
-    Serial.print(tensorModel.results[i]);
-    Serial.print(" ");
-  }
-  Serial.print("}");
+      bufferIndex++;
+      if(bufferIndex >= BUFFER_SIZE){
+        bufferIndex = 0;
+      }
+    }
 
-  Serial.println();
-  Serial.print("Max Index: ");
-  Serial.println(tensorModel.maxIndex);
-  Serial.print("Max Value: ");
-  Serial.println(tensorModel.maxVal);
-  Serial.println("\n");
-}
+    // gets rolling mode and rolling ave confidence and most likely pose
+    void getRollingStats(){
+      if (!success) return;
+
+      int counts[OUTPUT_SIZE] = {0, 0, 0, 0};
+      float confidenceSum = 0;
+
+      for (int i = 0; i < BUFFER_SIZE; i++) {
+        counts[indexBuffer[i]]++;
+        confidenceSum += confidenceBuffer[i];
+      }
+      int maxCountIndex = 0;
+
+      for (int i = 0; i < OUTPUT_SIZE; i++) {
+        if (counts[i] > counts[maxCountIndex]) {
+          maxCountIndex = i;
+        }
+      }
+
+      rollingMode = maxCountIndex;
+      rollingConfidence = confidenceSum / BUFFER_SIZE;
+      pose = labels[rollingMode];
+    }
+
+    void mlPredict(int vals[]) {
+      success = false;
+
+      for (int i = 0; i < INPUT_SIZE; i++) {
+        modelSetInput(vals[i], i);
+      }
+
+      if (!modelRunInference() || isnan(modelGetOutput(0))) {
+        Serial.println("Run Inference Failed!");
+        return;
+      }
+
+      success = true;
+      int maxIndex = 0;
+      float results[OUTPUT_SIZE] = {0, 0, 0, 0};
+
+      for (int i = 0; i < OUTPUT_SIZE; i++) {
+        results[i] = modelGetOutput(i);
+
+        if (results[i] > results[maxIndex]) {
+          maxIndex = i;
+        }
+      }
+
+      // Serial.print("{ ");
+      // for (int i = 0; i < OUTPUT_SIZE; i++) {
+      //   Serial.print(results[i]);
+      //   Serial.print(" ");
+      // }
+      // Serial.print("}");
+
+      add(maxIndex, results[maxIndex]);
+      getRollingStats();
+    }
+
+    void displayResults(){
+      if (!success) {
+        Serial.println("Failed to get results");
+        return;
+      }
+
+      Serial.print("Pose: ");
+      Serial.print(pose);
+      Serial.print("\tConfidence: ");
+      Serial.print(rollingConfidence);
+      Serial.println("\n");
+    }
+};

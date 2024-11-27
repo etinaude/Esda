@@ -5,77 +5,42 @@
 #include "hardware.h"
 #include "ml.h"
 
-int issueDetected = false;
+TensorModel tensorModel;
+Api api = Api();
+Hardware hardware = Hardware();
 
 void setup() {
   Serial.begin(9600);
-  setupPins();
-  setupWifi();
-  pinMode(LED_BUILTIN, OUTPUT);
-
-
+  api.setupWifi();
+  tensorModel = TensorModel();
   Serial.println("Setup done");
-  delay(1000);
-
-
-  if (!modelInit(model, tensor_arena, kTensorArenaSize)) {
-    Serial.println("Model initialization failed!");
-    while (true)
-      ;
-  }
-  Serial.println("Model initialization done.");
-}
-
-void sendDetectApi(TensorModel tensorModel) {
-  issueDetected = true;
-  setLED(0, 255);  //red
-  handleMotor(true);
-
-  JSONVar data;
-
-  data["accuracy"] = tensorModel.maxVal;
-  data["pose"] = tensorModel.maxIndex;
-
-  // send api
-  sendAPI("/detect", data);
-}
-
-void sendStatusApi() {
-  // TODO
-}
-
-void sendCancelApi() {
-  handleMotor(false);
-  setLED(0, 0);  //off
-
-  JSONVar data;
-  sendAPI("/cancel", data);
-}
-
-
-void sendTrainingData() {
-  JSONVar data;
-  String jsonString = "[" + String(flexVals[0]) + "," + String(flexVals[1]) + "," + String(flexVals[2]) + "," + String(flexVals[3]) + "," + String(flexVals[4]) + "]";
-  data["flexVals"] = jsonString;
-  Serial.println(jsonString);
-
-  // sendAPI("/train", data);
 }
 
 void training(){
-  readSensors();
-  sendTrainingData();
+  hardware.readSensors();
+  hardware.printJson();
   delay(500);
 }
 
-void prediction(){
-  readSensors();
-  TensorModel tensorModel = mlPredict(flexVals);
-  displayResults(tensorModel);
+void detect(){
+  hardware.setLED(0, 255);  //red
+  hardware.handleMotor(true);
+  api.sendDetectApi(tensorModel.rollingMode, tensorModel.rollingConfidence);
+}
 
-  if(tensorModel.maxIndex == 1){
-    sendDetectApi(tensorModel);
+void prediction(){
+  hardware.readSensors();
+  tensorModel.mlPredict(hardware.flexVals);
+
+  if(tensorModel.bufferIndex == 0){
+    tensorModel.displayResults();
+
+    if(tensorModel.rollingMode > 0){
+      detect();
+    }
   }
+
+  delay(100);
 }
 
 void blink(){
@@ -85,9 +50,14 @@ void blink(){
   delay(500);
 }
 
+void cancel(){
+  hardware.handleMotor(false);
+  hardware.setLED(0, 0);
+  api.sendCancelApi();
+}
 
 void loop() {
-//  training();
-// prediction();
-//  blink();
+  //  training();
+  prediction();
+  //  blink();
 }
