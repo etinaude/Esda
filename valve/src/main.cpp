@@ -4,7 +4,7 @@
 #include <WiFi.h>
 #include "FastLED.h"
 
-#define valvePinA 3
+#define valvePinA 4
 #define LEDPin 7
 
 using namespace websockets;
@@ -58,7 +58,7 @@ void onWebSocketMessage(WebsocketsMessage message) {
     Serial.print("Pose: ");
     Serial.println(pose);
 
-    if (pose >= 0 && pose < 7) handleValve(true);
+    if (pose >= 0) handleValve(true);
     if (event == "cancel") handleValve(false);
   } else {
     Serial.println("Message not intended for this device.");

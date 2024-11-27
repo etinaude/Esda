@@ -8,7 +8,7 @@ const authToken = '7a052a963bca51dc5fb4727ab4c4f109';
 const client = twilio(accountSid, authToken);
 
 const outputDeviceId = 'cf414906-b98b-4c42-bcac-c64987501bd9';
-const notificationPhone = '+1234567890'; // Replace with the actual recipient phone number
+const notificationPhone = '+34618963759'; // Replace with the actual recipient phone number
 const twilioPhone = '+1 575 219 4205'; // Replace with your Twilio phone number
 
 module.exports = (broadcastMessage) => {
@@ -27,19 +27,7 @@ module.exports = (broadcastMessage) => {
       };
       broadcastMessage(message);
 
-      // Send SMS via Twilio
-      client.messages
-        .create({
-          body: `Check in on XXXX, they may be having a seizure. Pose: ${pose}, Accuracy: ${accuracy}.`,
-          from: twilioPhone,
-          to: notificationPhone,
-        })
-        .then((msg) => {
-          console.log('SMS sent:', msg.sid);
-        })
-        .catch((err) => {
-          console.error('Error sending SMS:', err);
-        });
+      sendSMS();
 
       // Respond to the HTTP client
       res.status(200).send({
@@ -52,3 +40,19 @@ module.exports = (broadcastMessage) => {
 
   return router;
 };
+
+
+function sendSMS() {
+  client.messages
+    .create({
+      body: `Check in on XXXX, they may be having a seizure.`,
+      from: twilioPhone,
+      to: notificationPhone,
+    })
+    .then((msg) => {
+      console.log('SMS sent:', msg.sid);
+    })
+    .catch((err) => {
+      console.error('Error sending SMS:', err);
+    });
+}
