@@ -9,8 +9,7 @@ String serverName = "http://192.168.176.124:3000";
 
 class Api {
   public:
-    Api() {
-    }
+    Api() {}
 
     void setupWifi() {
       WiFi.begin(ssid, password);
@@ -19,8 +18,7 @@ class Api {
         delay(500);
         Serial.print(".");
       }
-      Serial.println("");
-      Serial.print("Connected to WiFi network with IP Address: ");
+      Serial.println("Connected to WiFi network with IP Address: ");
       Serial.println(WiFi.localIP());
 
       delay(1000);
@@ -54,6 +52,13 @@ class Api {
       // send api
       sendAPI("/detect", data);
     }
+
+    void sendTrainApi(JSONVar data) {
+      // send api
+      sendAPI("/train", data);
+    }
+
+
 
     void sendStatusApi() {
       // TODO

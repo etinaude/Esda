@@ -111,3 +111,6 @@ class TensorModel {
       Serial.println("\n");
     }
 };
+
+
+TensorModel tensorModel;

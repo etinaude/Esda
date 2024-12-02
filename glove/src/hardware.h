@@ -65,11 +65,13 @@ class Hardware {
       Serial.println();
     }
 
-    void printJson(){
+    JSONVar convertJson(){
       JSONVar data;
       String jsonString = "[" + String(flexVals[0]) + "," + String(flexVals[1]) + "," + String(flexVals[2]) + "," + String(flexVals[3]) + "," + String(flexVals[4]) + "]";
       data["flexVals"] = jsonString;
       Serial.println(jsonString);
+
+      return data;
     }
 
     bool isButtonPressed(){
