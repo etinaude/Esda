@@ -8,12 +8,12 @@ const authToken = '7a052a963bca51dc5fb4727ab4c4f109';
 const client = twilio(accountSid, authToken);
 
 const outputDeviceId = 'cf414906-b98b-4c42-bcac-c64987501bd9';
-const notificationPhone = '+34618963759'; // Replace with the actual recipient phone number
-const twilioPhone = '+1 575 219 4205'; // Replace with your Twilio phone number
+const notificationPhone = '+34618963759';
+const twilioPhone = '+1 575 219 4205';
 
 module.exports = (broadcastMessage) => {
   router.post('/', (req, res) => {
-    const { pose, accuracy, deviceId } = req.body; // Expect JSON {pose: int {0,6}, accuracy: int {0,100}, deviceId: str}
+    const { pose, accuracy, deviceId } = req.body;
 
     console.log(`Sending pose: ${pose}, with accuracy: ${accuracy} for device with id: ${deviceId}`);
 
@@ -27,7 +27,7 @@ module.exports = (broadcastMessage) => {
       };
       broadcastMessage(message);
 
-      sendSMS();
+      // sendSMS();
 
       // Respond to the HTTP client
       res.status(200).send({

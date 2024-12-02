@@ -1,4 +1,10 @@
 normal = 0
-back = 1
-fist = 2
-finger = 3
+fish = 1
+grip = 2
+dog = 3
+back = 4
+fist = 5
+pinch = 6
+finger = 7
+speaker = 8
+middle = 9
