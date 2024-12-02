@@ -5,7 +5,6 @@
 #include "hardware.h"
 #include "ml.h"
 
-TensorModel tensorModel;
 Api api = Api();
 Hardware hardware = Hardware();
 
@@ -14,13 +13,16 @@ int triggerCount = 0;
 void setup() {
   Serial.begin(9600);
   api.setupWifi();
-  tensorModel = TensorModel();
+  // tensorModel = TensorModel();
   Serial.println("Setup done");
 }
 
 void training(){
   hardware.readSensors();
-  hardware.printJson();
+  JSONVar json = hardware.convertJson();
+  // delay(500);
+
+  api.sendTrainApi(json);
   delay(500);
 }
 
@@ -66,11 +68,9 @@ void prediction(){
   delay(150);
 }
 
-
-
 void loop() {
-  //  training();
-  prediction();
+  training();
+  // prediction();
 
   //  blink();
 }
