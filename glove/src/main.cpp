@@ -1,5 +1,4 @@
 #include <Arduino.h>
-#include <Arduino_JSON.h>
 #include <SPI.h>
 #include "api.h"
 #include "hardware.h"
@@ -13,7 +12,7 @@ int triggerCount = 0;
 void setup() {
   Serial.begin(9600);
   api.setupWifi();
-  // tensorModel = TensorModel();
+  tensorModel = TensorModel();
   Serial.println("Setup done");
 }
 
@@ -27,9 +26,11 @@ void training(){
 }
 
 void blink(){
-  digitalWrite(LED_BUILTIN, HIGH);
-  delay(200);
-  digitalWrite(LED_BUILTIN, LOW);
+  hardware.setLED(120, 255);
+  delay(500);
+  hardware.setLED(0, 0);
+  delay(500);
+  Serial.println("Blink");
 }
 
 void cancel(){
@@ -69,8 +70,9 @@ void prediction(){
 }
 
 void loop() {
-  training();
-  // prediction();
+
+  // training();
+  prediction();
 
   //  blink();
 }

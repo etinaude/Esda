@@ -1,9 +1,10 @@
 #include <Arduino.h>
 #include "FastLED.h"
+#include <Arduino_JSON.h>
 
 #define NumPixels 1
 
-#define LEDPin 37
+#define LEDPin 21
 #define MotorPin 6
 #define ButtonPin 8
 
@@ -31,15 +32,16 @@ class Hardware {
       pinMode(Flex4Pin, INPUT);
       pinMode(Flex5Pin, INPUT);
 
-      // FastLED.addLeds<WS2812, LEDPin, GRB>(leds, NumPixels);
-      // FastLED.setBrightness(255);
+      FastLED.addLeds<WS2812, LEDPin, GRB>(leds, NumPixels);
+      FastLED.setBrightness(20);
     }
 
     void handleMotor(bool onOff) {
       digitalWrite(MotorPin, onOff);
     }
 
-    void setLED(int hue, int val) {  leds[0] = CHSV(hue, 255, val);
+    void setLED(int hue, int val) {
+      leds[0] = CHSV(hue, 255, val);
       FastLED.show();
     }
 
