@@ -4,7 +4,7 @@
 
 #define INPUT_SIZE 5
 #define OUTPUT_SIZE 4
-#define BUFFER_SIZE 3
+#define BUFFER_SIZE 5
 
 // mapping
 String labels[OUTPUT_SIZE] = {"Normal", "Back", "Fist", "Finger"};
@@ -86,14 +86,6 @@ class TensorModel {
           maxIndex = i;
         }
       }
-
-      // Serial.print("{ ");
-      // for (int i = 0; i < OUTPUT_SIZE; i++) {
-      //   Serial.print(modelGetOutput(i));
-      //   Serial.print(" ");
-      // }
-      // Serial.print("}");
-
       add(maxIndex, modelGetOutput(maxIndex));
       getRollingStats();
     }

@@ -1,78 +1,16 @@
 #include <Arduino.h>
 #include <SPI.h>
-#include "api.h"
-#include "hardware.h"
-#include "ml.h"
+// #include "modes/training.h"
+// #include "core/hardware.h"
 
-Api api = Api();
-Hardware hardware = Hardware();
-
-int triggerCount = 0;
+#include "modes/predict.h"
 
 void setup() {
   Serial.begin(9600);
-  api.setupWifi();
-  tensorModel = TensorModel();
-  Serial.println("Setup done");
-}
-
-void training(){
-  hardware.readSensors();
-  JSONVar json = hardware.convertJson();
-  // delay(500);
-
-  api.sendTrainApi(json);
-  delay(500);
-}
-
-void blink(){
-  hardware.setLED(120, 255);
-  delay(500);
-  hardware.setLED(0, 0);
-  delay(500);
-  Serial.println("Blink");
-}
-
-void cancel(){
-  hardware.handleMotor(false);
-  hardware.setLED(0, 0);
-  // api.sendCancelApi();
-  triggerCount = 0;
-}
-
-void detect(){
-  hardware.handleMotor(true);
-
-  triggerCount++;
-  if(triggerCount > 5){
-    api.sendDetectApi(tensorModel.rollingMode, tensorModel.rollingConfidence);
-    blink();
-    cancel();
-  }
-
-}
-
-void prediction(){
-  hardware.readSensors();
-  tensorModel.mlPredict(hardware.flexVals);
-
-  if(tensorModel.bufferIndex == 0){
-    tensorModel.displayResults();
-
-    if(tensorModel.rollingMode > 0){
-      detect();
-    } else{
-      cancel();
-    }
-  }
-
-  delay(150);
+  predictSetup();
 }
 
 void loop() {
-
   // training();
-  prediction();
-
-  //  blink();
+  // delay(500);
 }

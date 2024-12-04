@@ -79,4 +79,12 @@ class Hardware {
     bool isButtonPressed(){
       return digitalRead(ButtonPin) == LOW;
     }
+
+    void blink(){
+      setLED(120, 255);
+      delay(500);
+      setLED(0, 0);
+      delay(500);
+      Serial.println("Blink");
+    }
 };
