@@ -2,10 +2,14 @@
 #include <SPI.h>
 #include "core/api.h"
 #include "core/hardware.h"
-#include "core/ml.h"
 
-Api api = Api();
-Hardware hardware = Hardware();
+Api api;
+Hardware hardware;
+
+void trainingSetup() {
+  hardware.setup();
+  api.setup();
+}
 
 void training(){
   hardware.readSensors();

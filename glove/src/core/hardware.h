@@ -5,14 +5,20 @@
 #define NumPixels 1
 
 #define LEDPin 21
-#define MotorPin 6
+#define MotorPin 7
 #define ButtonPin 8
 
-#define Flex1Pin 11
-#define Flex2Pin 9
-#define Flex3Pin 7
-#define Flex4Pin 5
-#define Flex5Pin 3
+#define Flex1Pin 2
+#define Flex2Pin 3
+#define Flex3Pin 9
+#define Flex4Pin 10
+#define Flex5Pin 11
+
+#define GREEN 0
+#define YELLOW 80
+#define PURPLE 120
+#define BLUE 200
+#define RED 100
 
 CRGB leds[NumPixels];
 
@@ -20,10 +26,10 @@ class Hardware {
   public:
     int flexVals[5];
 
-    Hardware() {
-      pinMode(MotorPin, OUTPUT);
-      pinMode(LED_BUILTIN, OUTPUT);
+    Hardware() {}
 
+    void setup(){
+      pinMode(MotorPin, OUTPUT);
       pinMode(ButtonPin, INPUT);
 
       pinMode(Flex1Pin, INPUT);
@@ -32,16 +38,25 @@ class Hardware {
       pinMode(Flex4Pin, INPUT);
       pinMode(Flex5Pin, INPUT);
 
+
       FastLED.addLeds<WS2812, LEDPin, GRB>(leds, NumPixels);
-      FastLED.setBrightness(20);
+      FastLED.setBrightness(255);
+      setLED(YELLOW);
+
+      delay(200);
     }
 
     void handleMotor(bool onOff) {
       digitalWrite(MotorPin, onOff);
     }
 
-    void setLED(int hue, int val) {
-      leds[0] = CHSV(hue, 255, val);
+    void setLED(int hue) {
+      leds[0] = CHSV(hue, 255, 255);
+      FastLED.show();
+    }
+
+    void offLED() {
+      leds[0] = CRGB::Black;
       FastLED.show();
     }
 
@@ -81,10 +96,9 @@ class Hardware {
     }
 
     void blink(){
-      setLED(120, 255);
+      setLED(PURPLE);
       delay(500);
-      setLED(0, 0);
+      offLED();
       delay(500);
-      Serial.println("Blink");
     }
 };

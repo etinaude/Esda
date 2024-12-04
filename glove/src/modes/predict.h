@@ -4,8 +4,9 @@
 #include "core/hardware.h"
 #include "core/ml.h"
 
-Api api = Api();
-Hardware hardware = Hardware();
+Api api;
+Hardware hardware;
+TensorModel tensorModel;
 
 TaskHandle_t MLTask;
 TaskHandle_t ApiTask;
@@ -14,14 +15,14 @@ int triggerCount = 0;
 
 void cancel(){
   hardware.handleMotor(false);
-  hardware.setLED(0, 0);
-  // api.sendCancelApi();
+  hardware.offLED();
   triggerCount = 0;
   delay(200);
 }
 
 void detect(){
   hardware.handleMotor(true);
+  hardware.setLED(BLUE);
 
   triggerCount++;
   if(triggerCount > 5){
@@ -32,8 +33,6 @@ void detect(){
 }
 
 void MLTaskFunction( void * pvParameters ){
-  tensorModel = TensorModel();
-
   for(;;){
     hardware.readSensors();
     tensorModel.mlPredict(hardware.flexVals);
@@ -42,16 +41,14 @@ void MLTaskFunction( void * pvParameters ){
 }
 
 void ApiTaskFunction( void * pvParameters ){
-  api.setupWifi();
-  delay(1000);
-
   for(;;){
     if(tensorModel.bufferIndex == 0){
+      hardware.convertJson();
       tensorModel.displayResults();
       if(tensorModel.rollingMode > 0){
-        // detect();
+        detect();
       } else{
-        // cancel();
+        cancel();
       }
     }
     delay(100);
@@ -59,6 +56,14 @@ void ApiTaskFunction( void * pvParameters ){
 }
 
 void predictSetup() {
+  hardware.setup();
+  tensorModel.setup();
+  api.setup();
+
+  hardware.setLED(GREEN);
+  delay(500);
+  hardware.offLED();
+
   xTaskCreatePinnedToCore(MLTaskFunction, "MLTask", 10000, NULL, 1, &MLTask, 0);
   xTaskCreatePinnedToCore(ApiTaskFunction, "ApiTask", 10000, NULL, 1, &ApiTask, 1);
 }

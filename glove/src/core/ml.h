@@ -24,12 +24,16 @@ class TensorModel {
     float rollingConfidence = 0;
     String pose = "";
 
-    TensorModel(){
+    TensorModel(){}
+
+    void setup(){
       if (!modelInit(model, tensor_arena, kTensorArenaSize)){
         Serial.println("Model initialization failed!");
         while(true);
       }
       Serial.println("Model initialization done.");
+
+      delay(200);
     }
 
     void add(int index, float confidence){
@@ -103,6 +107,3 @@ class TensorModel {
       Serial.println("\n");
     }
 };
-
-
-TensorModel tensorModel;

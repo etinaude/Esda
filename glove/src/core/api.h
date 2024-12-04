@@ -12,7 +12,7 @@ class Api {
   public:
     Api() {}
 
-    void setupWifi() {
+    void setup() {
       WiFi.begin(ssid, password);
       Serial.println("Connecting");
       while (WiFi.status() != WL_CONNECTED) {
@@ -22,7 +22,7 @@ class Api {
       Serial.println("Connected to WiFi network with IP Address: ");
       Serial.println(WiFi.localIP());
 
-      delay(1000);
+      delay(200);
     }
 
     void sendAPI(String endPoint, JSONVar data) {
@@ -58,8 +58,6 @@ class Api {
       // send api
       sendAPI("/train", data);
     }
-
-
 
     void sendStatusApi() {
       // TODO
