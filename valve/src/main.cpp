@@ -4,8 +4,7 @@
 #include <WiFi.h>
 #include "FastLED.h"
 
-#define valvePinA 4
-#define LEDPin 7
+#define valvePinA 5
 
 using namespace websockets;
 
@@ -30,7 +29,7 @@ void setupWifi() {
 }
 
 void setupPins() {
-  pinMode(LEDPin, OUTPUT);
+  pinMode(8, OUTPUT);
   pinMode(valvePinA, OUTPUT);
   digitalWrite(valvePinA, HIGH);
 }
@@ -80,14 +79,23 @@ void connectWebSocket() {
 void setup() {
   Serial.begin(9600);
   setupPins();
-  setupWifi();
-  connectWebSocket();
+  // setupWifi();
+  // connectWebSocket();
 }
 
 void loop() {
-  if (!wsClient.available()) {
-    Serial.println("WebSocket disconnected. Reconnecting...");
-    connectWebSocket();
-  }
-  wsClient.poll();
+  // if (!wsClient.available()) {
+  //   Serial.println("WebSocket disconnected. Reconnecting...");
+  //   connectWebSocket();
+  // }
+  // wsClient.poll();
+
+  digitalWrite(valvePinA, HIGH);  // turn the LED on (HIGH is the voltage level)
+  digitalWrite(8, HIGH);  // turn the LED on (HIGH is the voltage level)
+
+  delay(1000);                      // wait for a second
+  digitalWrite(8, LOW);   // turn the LED off by making the voltage LOW
+  digitalWrite(valvePinA, LOW);  // turn the LED on (HIGH is the voltage level)
+
+  delay(1000);
 }
