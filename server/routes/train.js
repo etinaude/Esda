@@ -5,7 +5,7 @@ const router = express.Router();
 
 const trainingLogPath = path.join(__dirname, 'trainingLog.json');
 
-const LABEL = -3
+const LABEL = 3
 
 router.post('/', (req, res) => {
   const { deviceId, flexVals } = req.body;

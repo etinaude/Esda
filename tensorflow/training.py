@@ -5,7 +5,7 @@ from model import normalizer, optimizer, early_stopping, reduce_lr
 from colorama import Fore, Style
 
 
-OUTPUT_CLASSES = 10
+OUTPUT_CLASSES = 4
 
 data = pd.read_json('./data/train.json')
 
@@ -71,11 +71,11 @@ def export(model):
     with open('model.tflite', 'wb') as f:
         f.write(tflite_model)
 
-    converter.optimizations = [tf.lite.Optimize.DEFAULT]
-    tflite_quantized_model = converter.convert()
+    # converter.optimizations = [tf.lite.Optimize.DEFAULT]
+    # tflite_quantized_model = converter.convert()
 
-    with open('model_quantized.tflite', 'wb') as f:
-        f.write(tflite_quantized_model)
+    # with open('model_quantized.tflite', 'wb') as f:
+    #     f.write(tflite_quantized_model)
 
 
 model = train_model()
