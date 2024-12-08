@@ -9,7 +9,7 @@ void setup() {
 
   // hardware.setup(); // DEBUG
 
-  // trainingSetup()
+  // trainingSetup();
 }
 
 void loop() {

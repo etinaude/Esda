@@ -7,9 +7,9 @@
 #define BUFFER_SIZE 5
 
 // mapping
-String labels[OUTPUT_SIZE] = {"Normal", "Back", "Fist", "Finger"};
+String labels[OUTPUT_SIZE] = {"Normal", "Fist", "Back", "Finger"};
 
-constexpr int kTensorArenaSize = 2000;
+constexpr int kTensorArenaSize = 2500;
 alignas(16) uint8_t tensor_arena[kTensorArenaSize];
 
 class TensorModel {
@@ -77,8 +77,13 @@ class TensorModel {
         modelSetInput(vals[i], i);
       }
 
-      if (!modelRunInference() || isnan(modelGetOutput(0))) {
+      if (!modelRunInference()) {
         Serial.println("Run Inference Failed!");
+        return;
+      }
+
+      if (isnan(modelGetOutput(0))) {
+        Serial.println("Run Inference Failed! NaN");
         return;
       }
 

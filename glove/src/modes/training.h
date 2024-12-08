@@ -16,5 +16,6 @@ void training(){
   JSONVar json = hardware.convertJson();
 
   api.sendTrainApi(json);
+  hardware.blink();
   delay(500);
 }

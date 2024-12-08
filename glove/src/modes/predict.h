@@ -3,10 +3,13 @@
 #include "core/api.h"
 #include "core/hardware.h"
 #include "core/ml.h"
+#include "core/websockets.h"
+
 
 Api api;
 Hardware hardware;
 TensorModel tensorModel;
+Websocket websocket;
 
 TaskHandle_t MLTask;
 TaskHandle_t ApiTask;
@@ -43,10 +46,19 @@ void MLTaskFunction( void * pvParameters ){
 void ApiTaskFunction( void * pvParameters ){
   for(;;){
     if(tensorModel.bufferIndex == 0){
-      hardware.convertJson();
+      websocket.poll();
+      JSONVar data = hardware.convertJson();
       tensorModel.displayResults();
+
+      data["confidence"] = tensorModel.rollingConfidence;
+      data["pose"] = tensorModel.rollingMode;
+
+      String jsonString = JSON.stringify(data);
+
+      websocket.sendMessage(jsonString);
+
       if(tensorModel.rollingMode > 0){
-        detect();
+        // detect();
       } else{
         cancel();
       }
@@ -57,10 +69,15 @@ void ApiTaskFunction( void * pvParameters ){
 
 void predictSetup() {
   hardware.setup();
-  tensorModel.setup();
-  api.setup();
+  hardware.setLED(RED);
 
+  tensorModel.setup();
+  hardware.setLED(YELLOW);
+
+  api.setup();
+  websocket.connect();
   hardware.setLED(GREEN);
+
   delay(500);
   hardware.offLED();
 
