@@ -5,12 +5,13 @@ const router = express.Router();
 
 const trainingLogPath = path.join(__dirname, 'trainingLog.json');
 
-const LABEL = 3
+const LABEL = -6
+
 
 router.post('/', (req, res) => {
   const { deviceId, flexVals } = req.body;
 
-  console.log(`Received training values: ${flexVals}`);
+  console.log(`LABEL: ${LABEL} values: ${flexVals}`);
 
   let parsedFlexVals;
   try {

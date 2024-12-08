@@ -3,6 +3,7 @@ const bodyParser = require('body-parser');
 const WebSocket = require('ws');
 const statusRoutes = require('./routes/status');
 const detectRoutes = require('./routes/detect');
+
 const cancelRoutes = require('./routes/cancel');
 const trainRoutes = require('./routes/train');
 
@@ -22,28 +23,30 @@ wss.on('connection', (ws) => {
   console.log('New WebSocket client connected');
   clients.push(ws);
 
-// Remove the client when disconnected
-ws.on('close', (code, reason) => {
-  console.log(`WebSocket client disconnected. Code: ${code}, Reason: ${reason}`);
-  // Only remove if the client is actually disconnected
-  if (ws.readyState === WebSocket.CLOSED) {
-    clients = clients.filter((client) => client !== ws);
-  }
-});
-
-// Handle ping pong to keep the connection alive.
-const interval = setInterval(() => {
-  clients.forEach((client) => {
-    if (client.readyState === WebSocket.OPEN) {
-      client.ping(); // Send a ping to the client
+  // Remove the client when disconnected
+  ws.on('close', (code, reason) => {
+    console.log(`WebSocket client disconnected. Code: ${code}, Reason: ${reason}`);
+    // Only remove if the client is actually disconnected
+    if (ws.readyState === WebSocket.CLOSED) {
+      clients = clients.filter((client) => client !== ws);
     }
   });
-}, 30000); // Every 30 seconds
 
-ws.on('pong', () => {
-  console.log('Received pong from client');
-});
+  ws.on('error', (error) => {
+    console.error('WebSocket error:', error);
+  });
 
+  ws.on('message', (message) => {
+    const data = JSON.parse(message);
+
+    flexVals = JSON.parse(data.flexVals);
+    data.flexVals = flexVals;
+
+    console.log('Received message:', data);
+
+    // Broadcast the message to all clients
+    broadcastMessage(data);
+  });
 });
 
 // Broadcast a message to all connected clients
